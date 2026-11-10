@@ -4,6 +4,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <!-- Link de Voltar -->
+                  <!-- Boton para indices de libros pagina -->
                 <a href="{{ route('books.index') }}" class="text-decoration-none mb-4 d-inline-block">← Voltar para Livros</a>
 
                 <!-- Card de Detalhes do Livro -->
@@ -16,8 +17,12 @@
                                 <p class="lead mb-0 opacity-75">por {{ $book['author'] }}</p>
                             </div>
                             <div class="d-flex gap-2">
-                                <a href="book-create.html" class="btn btn-light">Editar</a>
-                                <button class="btn btn-danger">Excluir</button>
+                                <a href="{{ route('books.edit', $book['id']) }}" class="btn btn-light">Editar</a>
+                                <form action="{{ route('books.destroy', $book['id']) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -63,7 +68,7 @@
                         <!-- Botões de Ação -->
                         <div class="mt-4 pt-3 border-top d-flex gap-3">
                             <a href="{{ route('books.index') }}" class="btn btn-primary px-4">Voltar para a Lista</a>
-                            <a href="book-create.html" class="btn btn-success px-4">Editar Livro</a>
+                            <a href="{{ route('books.edit', $book['id']) }}" class="btn btn-success px-4">Editar Livro</a>
                         </div>
                     </div>
                 </div>

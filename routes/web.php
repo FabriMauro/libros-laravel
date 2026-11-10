@@ -7,114 +7,122 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 
+function booksCatalog(): array
+{
+    return [
+        [
+            'id' => 1,
+            'title' => 'El gran Gatsby',
+            'author' => 'F. Scott Fitzgerald',
+            'genre' => 'Ficção',
+            'publication_year' => 1925,
+            'description' => 'Um romance clássico que explora a decadência da sociedade americana na década de 1920.',
+        ],
+        [
+            'id' => 2,
+            'title' => '1984',
+            'author' => 'George Orwell',
+            'genre' => 'Distopia',
+            'publication_year' => 1949,
+            'description' => 'Um romance distópico que retrata um futuro totalitário e a vigilância constante do governo.',
+        ],
+        [
+            'id' => 3,
+            'title' => 'Orgulho e Preconceito',
+            'author' => 'Jane Austen',
+            'genre' => 'Romance',
+            'publication_year' => 1813,
+            'description' => 'Um romance clássico que explora as questões de classe, casamento e moralidade na sociedade inglesa do século XIX.',
+        ],
+        [
+            'id' => 4,
+            'title' => 'O Senhor dos Anéis',
+            'author' => 'J.R.R. Tolkien',
+            'genre' => 'Fantasia',
+            'publication_year' => 1954,
+            'description' => 'Um romance de fantasia que segue a jornada de um hobbit para destruir um anel de poder.',
+        ],
+        [
+            'id' => 5,
+            'title' => 'O Código Da Vinci',
+            'author' => 'Dan Brown',
+            'genre' => 'Thriller',
+            'publication_year' => 2003,
+            'description' => 'Um thriller de mistério que segue um simbologista enquanto ele desvenda segredos ocultos na história da arte e da religião.',
+        ],
+    ];
+}
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('index', ['books' => booksCatalog()]);
 })->name('index');
+
 Route::get('/libros', function () {
-
-$books=[
-    [
-    'id' => 1,
-    'title' => 'El gran Gatsby',
-    'author' => 'F. Scott Fitzgerald',
-    'genre' => 'Ficção',
-    'publication_year' => 1925,
-    'description' => 'Um romance clássico que explora a decadência da sociedade americana na década de 1920.',
-    ],
-    [
-    'id' => 2,
-    'title' => '1984',
-    'author' => 'George Orwell',
-    'genre' => 'Distopia',
-    'publication_year' => 1949,
-    'description' => 'Um romance distópico que retrata um futuro totalitário e a vigilância constante do governo.',
-    ],
-
-    [
-    'id' => 3,
-    'title' => 'Orgulho e Preconceito',
-    'author' => 'Jane Austen',
-    'genre' => 'Romance',
-    'publication_year' => 1813,
-    'description' => 'Um romance clássico que explora as questões de classe, casamento e moralidade na sociedade inglesa do século XIX.',
-
-    ],
-     [
-    'id' => 4,
-    'title' => 'O Senhor dos Anéis',
-    'author' => 'J.R.R. Tolkien',
-    'genre' => 'Fantasia',
-    'publication_year' => 1954,
-    'description' => 'Um romance de fantasia que segue a jornada de um hobbit para destruir um anel de poder.',
-    ],
-    [
-    'id' => 5,
-    'title' => 'O Código Da Vinci',
-    'author' => 'Dan Brown',
-    'genre' => 'Thriller',
-    'publication_year' => 2003,
-    'description' => 'Um thriller de mistério que segue um simbologista enquanto ele desvenda segredos ocultos na história da arte e da religião.',]
-];
-    //Aqui busco la carpta books y dentro de ella el archivo index.blade.php y tambien lo
-    return view('books.index',['books' => $books]);
-    //pongo un nombre a la ruta para poder llamarla desde cualquier parte de la aplicacion
+    return view('books.index', ['books' => booksCatalog()]);
 })->name('books.index');
 
+Route::get('/libros/crear', function () {
+    return view('books.create');
+})->name('books.create');
+
+Route::post('/libros', function (Request $request) {
+    $books = booksCatalog();
+    $books[] = [
+        'id' => count($books) + 1,
+        'title' => $request->input('title'),
+        'author' => $request->input('author'),
+        'genre' => $request->input('genre'),
+        'publication_year' => (int) $request->input('publication_year'),
+        'description' => $request->input('description'),
+    ];
+
+    return redirect()->route('books.index')->with('success', 'Libro añadido correctamente.');
+})->name('books.store');
+
+Route::get('/libros/{id}/editar', function ($id) {
+    $book = array_find(booksCatalog(), fn ($book) => (int) $book['id'] === (int) $id);
+
+    if (! $book) {
+        abort(404);
+    }
+
+    return view('books.edit', ['book' => $book]);
+})->name('books.edit');
+
+Route::put('/libros/{id}', function (Request $request, $id) {
+    $books = booksCatalog();
+    $index = array_search((int) $id, array_map(fn ($book) => (int) $book['id'], $books), true);
+
+    if ($index === false) {
+        abort(404);
+    }
+
+    $books[$index] = [
+        'id' => (int) $id,
+        'title' => $request->input('title'),
+        'author' => $request->input('author'),
+        'genre' => $request->input('genre'),
+        'publication_year' => (int) $request->input('publication_year'),
+        'description' => $request->input('description'),
+    ];
+
+    return redirect()->route('books.show', $id)->with('success', 'Libro actualizado correctamente.');
+})->name('books.update');
+
+Route::delete('/libros/{id}', function ($id) {
+    return redirect()->route('books.index')->with('success', 'Libro eliminado correctamente.');
+})->name('books.destroy');
+
 Route::get('libros/{id}', function ($id) {
-    $books=[
-    [
-    'id' => 1,
-    'title' => 'El gran Gatsby',
-    'author' => 'F. Scott Fitzgerald',
-    'genre' => 'Ficção',
-    'publication_year' => 1925,
-    'description' => 'Um romance clássico que explora a decadência da sociedade americana na década de 1920.',
-    ],
-    [
-    'id' => 2,
-    'title' => '1984',
-    'author' => 'George Orwell',
-    'genre' => 'Distopia',
-    'publication_year' => 1949,
-    'description' => 'Um romance distópico que retrata um futuro totalitário e a vigilância constante do governo.',
-    ],
+    $book = array_find(booksCatalog(), function ($book) use ($id) {
+        return (int) $book['id'] === (int) $id;
+    });
 
-    [
-    'id' => 3,
-    'title' => 'Orgulho e Preconceito',
-    'author' => 'Jane Austen',
-    'genre' => 'Romance',
-    'publication_year' => 1813,
-    'description' => 'Um romance clássico que explora as questões de classe, casamento e moralidade na sociedade inglesa do século XIX.',
+    if (! $book) {
+        abort(404);
+    }
 
-    ],
-     [
-    'id' => 4,
-    'title' => 'O Senhor dos Anéis',
-    'author' => 'J.R.R. Tolkien',
-    'genre' => 'Fantasia',
-    'publication_year' => 1954,
-    'description' => 'Um romance de fantasia que segue a jornada de um hobbit para destruir um anel de poder.',
-    ],
-    [
-    'id' => 5,
-    'title' => 'O Código Da Vinci',
-    'author' => 'Dan Brown',
-    'genre' => 'Thriller',
-    'publication_year' => 2003,
-    'description' => 'Um thriller de mistério que segue um simbologista enquanto ele desvenda segredos ocultos na história da arte e da religião.',]
-];
-//Busco el libro con el id proporcionado en la ruta
-$book=array_find($books, function ($book) use ($id) {
-    return $book['id'] == $id;
-});
-//Si no encuentra el libro con el id proporcionado, devuelve un error 404
-if (!$book) {
-    abort(404);
-}
-//Aqui busco la carpeta books y dentro de ella el archivo show.blade.php y tambien lo
-    return view('books.show',['book' => $book]);
-    //pongo un nombre a la ruta para poder llamarla desde cualquier parte de la aplicacion
+    return view('books.show', ['book' => $book]);
 })->name('books.show');
 
 

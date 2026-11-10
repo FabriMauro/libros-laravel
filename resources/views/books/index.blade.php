@@ -7,8 +7,8 @@
                 <h1 class="mb-1">Coleccion de Libros</h1>
                 <p class="text-muted mb-0">Gerencie sua biblioteca de livros</p>
             </div>
-            <a href="book-create.html" class="btn btn-primary btn-lg">
-                + Adicionar Novo Livro
+            <a href="{{ route('books.create') }}" class="btn btn-primary btn-lg">
+                + Añadir Libro
             </a>
         </div>
 
@@ -38,8 +38,12 @@
                             <td class="text-muted">{{ $book['publication_year'] }}</td>
                             <td>
                                 <a href="{{ route('books.show', $book['id']) }}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
-                                <a href="book-create.html" class="btn btn-sm btn-outline-success me-1">Editar</a>
-                                <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                                <a href="{{ route('books.edit', $book['id']) }}" class="btn btn-sm btn-outline-success me-1">Editar</a>
+                                <form action="{{ route('books.destroy', $book['id']) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                </form>
                             </td>
                         </tr>
                           @endforeach
