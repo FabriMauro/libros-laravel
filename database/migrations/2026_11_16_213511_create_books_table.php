@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             //Añadir los campos necesarios para la tabla de libros
-            $table->string('title');
-            $table->string('author');
-            $table->string('published_year');
+            $table->string('title')->nullable();
+            $table->string('author')->nullable();
+            $table->string('genre')->nullable();
+            $table->string('published_year')->nullable();
+
+            //nullable() permite que el campo pueda ser nulo
             $table->text('description')->nullable();
             $table->timestamps();
         });

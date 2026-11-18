@@ -1,64 +1,24 @@
 <?php
 
 use App\Models\User;
+// Importa mi modelo Book para poder usarlo en las rutas
+use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 
-function booksCatalog(): array
-{
-    return [
-        [
-            'id' => 1,
-            'title' => 'El gran Gatsby',
-            'author' => 'F. Scott Fitzgerald',
-            'genre' => 'Ficção',
-            'publication_year' => 1925,
-            'description' => 'Um romance clássico que explora a decadência da sociedade americana na década de 1920.',
-        ],
-        [
-            'id' => 2,
-            'title' => '1984',
-            'author' => 'George Orwell',
-            'genre' => 'Distopia',
-            'publication_year' => 1949,
-            'description' => 'Um romance distópico que retrata um futuro totalitário e a vigilância constante do governo.',
-        ],
-        [
-            'id' => 3,
-            'title' => 'Orgulho e Preconceito',
-            'author' => 'Jane Austen',
-            'genre' => 'Romance',
-            'publication_year' => 1813,
-            'description' => 'Um romance clássico que explora as questões de classe, casamento e moralidade na sociedade inglesa do século XIX.',
-        ],
-        [
-            'id' => 4,
-            'title' => 'O Senhor dos Anéis',
-            'author' => 'J.R.R. Tolkien',
-            'genre' => 'Fantasia',
-            'publication_year' => 1954,
-            'description' => 'Um romance de fantasia que segue a jornada de um hobbit para destruir um anel de poder.',
-        ],
-        [
-            'id' => 5,
-            'title' => 'O Código Da Vinci',
-            'author' => 'Dan Brown',
-            'genre' => 'Thriller',
-            'publication_year' => 2003,
-            'description' => 'Um thriller de mistério que segue um simbologista enquanto ele desvenda segredos ocultos na história da arte e da religião.',
-        ],
-    ];
-}
-
+//Rutas para la gestión de libros
 Route::get('/', function () {
-    return view('index', ['books' => booksCatalog()]);
+    //Obtengo todos los libros de la base de datos usando el modelo Book
+    $books=Book::all();
+    return view('index', ['books' => $books]);
 })->name('index');
-
+// Ruta para mostrar la lista de libros
 Route::get('/libros', function () {
-    return view('books.index', ['books' => booksCatalog()]);
+    $books=Book ::all();
+    return view('books.index', ['books' => $books]);
 })->name('books.index');
 
 Route::get('/libros/crear', function () {
@@ -112,17 +72,14 @@ Route::put('/libros/{id}', function (Request $request, $id) {
 Route::delete('/libros/{id}', function ($id) {
     return redirect()->route('books.index')->with('success', 'Libro eliminado correctamente.');
 })->name('books.destroy');
-
+// Ruta para visualizar un libro
 Route::get('libros/{id}', function ($id) {
-    $book = array_find(booksCatalog(), function ($book) use ($id) {
-        return (int) $book['id'] === (int) $id;
-    });
-
-    if (! $book) {
-        abort(404);
-    }
-
-    return view('books.show', ['book' => $book]);
+    // Obtengo el libro de la base de datos usando el modelo Book
+    //findOrFail es para la pantalla de error
+   $book=Book::findOrFail($id);
+   return view('books.show', [
+    'book' => $book
+    ]);
 })->name('books.show');
 
 
