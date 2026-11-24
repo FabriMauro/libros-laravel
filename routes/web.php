@@ -1,6 +1,10 @@
 <?php
 
 use App\Models\User;
+// Importa mis controladores para poder usarlos en las rutas
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BookController;
+use Illuminate\Support\Facades\App ;
 // Importa mi modelo Book para poder usarlo en las rutas
 use App\Models\Book;
 use Illuminate\Http\Request;
@@ -9,17 +13,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 
+function booksCatalog()
+{
+    return Book::all()->toArray();
+}
+
 //Rutas para la gestión de libros
-Route::get('/', function () {
-    //Obtengo todos los libros de la base de datos usando el modelo Book
-    $books=Book::all();
-    return view('index', ['books' => $books]);
-})->name('index');
+Route::get('/', [HomeController::class, 'index'])->name('index');
 // Ruta para mostrar la lista de libros
-Route::get('/libros', function () {
-    $books=Book ::all();
-    return view('books.index', ['books' => $books]);
-})->name('books.index');
+Route::get('/libros', [BookController::class, 'index'])->name('books.index');
 
 Route::get('/libros/crear', function () {
     return view('books.create');
@@ -73,14 +75,7 @@ Route::delete('/libros/{id}', function ($id) {
     return redirect()->route('books.index')->with('success', 'Libro eliminado correctamente.');
 })->name('books.destroy');
 // Ruta para visualizar un libro
-Route::get('libros/{id}', function ($id) {
-    // Obtengo el libro de la base de datos usando el modelo Book
-    //findOrFail es para la pantalla de error
-   $book=Book::findOrFail($id);
-   return view('books.show', [
-    'book' => $book
-    ]);
-})->name('books.show');
+Route::get('libros/{id}', [BookController::class, 'show'])->name('books.show');
 
 
 Route::middleware('guest')->group(function () {
