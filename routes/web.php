@@ -75,7 +75,7 @@ Route::delete('/libros/{id}', function ($id) {
     return redirect()->route('books.index')->with('success', 'Libro eliminado correctamente.');
 })->name('books.destroy');
 // Ruta para visualizar un libro
-Route::get('libros/{id}', [BookController::class, 'show'])->name('books.show');
+Route::get('libros/{book}', [BookController::class, 'show'])->name('books.show');
 
 
 Route::middleware('guest')->group(function () {

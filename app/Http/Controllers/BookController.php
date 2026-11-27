@@ -15,10 +15,8 @@ class BookController extends Controller
         return view('books.index', ['books' => $books]);
     }
 
-    public function show($id)
-    {
-        // Obtengo el libro de la base de datos usando el modelo Book
-        $book = Book::findOrFail($id);
+    public function show( Book $book)
+    {//Obtengo el libro de la base de datos usando el modelo Book
         return view('books.show', ['book' => $book]);
     }
 

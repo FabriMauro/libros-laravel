@@ -10,8 +10,8 @@ class HomeController extends Controller
     //
     public function index()
     {
-        //Obtengo todos los libros de la base de datos usando el modelo Book
-    $books=Book::all();
+        //Obtengo los 3 libros más recientes de la base de datos usando el modelo Book
+    $books=Book::latest()->take(3)->get();
     return view('index', ['books' => $books]);
 
 
